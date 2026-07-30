@@ -317,11 +317,49 @@ body {
   padding: 0 0.5rem;
 }
 
-/* ---------- Responsiv ---------- */
-@media (max-width: 520px) {
-  .stage__main { flex-direction: column; text-align: center; }
+/* ---------- Footer nur auf dem Startbildschirm ---------- */
+.app[data-phase="uebung"] .app__footer,
+.app[data-phase="pause"] .app__footer,
+.app[data-phase="finished"] .app__footer { display: none; }
+
+/* ---------- Responsiv: Training passt ohne Scrollen aufs Handy ---------- */
+@media (max-width: 560px) {
+  body { padding: 0.4rem; }
+  .app { gap: 0.55rem; }
+  .app__subtitle { display: none; }
+  .app__title { font-size: 1.45rem; }
+
+  .stage { padding: 0.75rem; gap: 0.55rem; }
+  .stage__main { flex-direction: column; text-align: center; gap: 0.55rem; }
   .stage__info { min-width: 0; }
-  .stage__next { color: var(--pause); }
+  .stage__counter { font-size: 0.75rem; }
+  .stage__name { font-size: 1.35rem; margin: 0.1rem 0 0.3rem; }
+  .stage__hint { margin: 0.1rem 0 0.4rem; font-size: 0.82rem; }
+  .stage__desc {
+    font-size: 0.85rem;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .stage__next { color: var(--pause); margin-top: 0.5rem; }
+
+  /* Timer und Skizze nebeneinander statt gestapelt -> spart viel Höhe */
+  .stage__visual { flex-direction: row; align-items: center; justify-content: center; gap: 1.1rem; }
+  .timer { width: clamp(118px, 34vw, 150px); }
+  .stage__sketch { width: 96px; }
+
+  .controls { gap: 0.4rem; }
+  .btn { font-size: 0.9rem; padding: 0.5rem 0.8rem; }
+
+  /* Startbildschirm etwas kompakter */
+  .start { padding: 1rem; }
+  .start__intro { margin-bottom: 0.9rem; }
+  .start__list { grid-template-columns: 1fr; margin-top: 1rem; }
+}
+
+/* Sehr niedrige Viewports (Querformat / kleine Phones): noch kompakter */
+@media (max-height: 640px) {
+  .app__header { display: none; }
+  .stage__sketch { width: 84px; }
+  .stage__desc { -webkit-line-clamp: 2; }
 }
 
 /* ---------- Dark Mode (optional, folgt System) ---------- */

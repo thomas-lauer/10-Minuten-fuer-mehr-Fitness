@@ -97,3 +97,21 @@ Nützliche Bausteine dabei:
   zu rastern und das Base64 herauszukopieren, scheiterte an Kopier-/Längenfehlern der
   langen Base64-Strings. Für Selbstkontrolle sind `getComputedStyle`/`getBBox`
   zuverlässiger.
+
+## 9. „Passt nicht aufs Handy" → viewport-fittendes Layout + Wake Lock
+
+Die Trainingsansicht war auf dem Smartphone ~270 px zu hoch (Scrollen nötig).
+Größter Übeltäter: Timer und Figur waren gestapelt. Lösung: auf schmalen Screens
+**Timer und Skizze nebeneinander** (`.stage__visual { flex-direction: row }`),
+kleinere Figur, kompaktere Abstände, Footer im Training ausblenden, Beschreibung auf
+wenige Zeilen begrenzen. So passt die aktive Ansicht exakt in den Viewport
+(getestet 375×812, 375×667, 360×640 → 0 px Überlauf).
+
+**Bildschirm anlassen:** die **Wake Lock API** (`navigator.wakeLock.request('screen')`)
+hält den Bildschirm an; wichtig ist, sie beim `visibilitychange` erneut anzufordern,
+weil der Lock beim Tab-Wechsel automatisch freigegeben wird.
+
+**Test-Stolperfalle:** Nach CSS-Änderungen zeigte der Vorschau-Browser weiter die
+**gecachte** `styles.css` (auch nach Reload). Verlässlich half, das Stylesheet per JS
+mit Cache-Buster neu zu laden: `link.href = 'styles.css?bust=' + zufallszahl`, dann
+messen. Sonst testet man gegen den alten Stand.

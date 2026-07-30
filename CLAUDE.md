@@ -66,6 +66,22 @@ Beim Pausieren wird die Restzeit eingefroren. Beim Fortsetzen wird `segStart` so
 zurückgerechnet, dass die eingefrorene Restzeit erhalten bleibt:
 `segStart = now - (dauer - restzeit) * 1000`.
 
+### Wake Lock (Bildschirm anlassen)
+`requestWakeLock()` fordert per `navigator.wakeLock.request('screen')` einen
+Screen-Wake-Lock an (beim Start, nach der User-Geste). Browser lösen den Lock beim
+Tab-Wechsel automatisch – der `visibilitychange`-Handler fordert ihn beim Zurückkehren
+erneut an. `releaseWakeLock()` gibt ihn bei Ende/Neustart frei. Fehlt die API oder
+wird sie abgelehnt, wird still ignoriert (Fallback: nichts passiert).
+
+### Responsives Layout
+Desktop: Info-Block neben dem Visual, Timer über der Skizze. Auf schmalen Screens
+(`max-width: 560px`) stehen **Timer und Skizze nebeneinander** (`.stage__visual`
+wird `flex-direction: row`), Abstände/Schriften schrumpfen, der Footer wird während
+des Trainings ausgeblendet (`.app[data-phase="uebung|pause|finished"] .app__footer`),
+und die Beschreibung wird auf 3 Zeilen begrenzt – so passt die aktive Trainingsansicht
+ohne Scrollen in den Viewport. Bei sehr niedrigen Viewports (`max-height: 640px`)
+wird zusätzlich der Header ausgeblendet.
+
 ### Audio (`Web Audio API`)
 Kein Audio-File. Kurze Töne per `AudioContext`-Oszillator:
 - Übung startet → höherer Ton (880 Hz), Pause startet → tieferer Ton (440 Hz).

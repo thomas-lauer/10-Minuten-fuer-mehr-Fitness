@@ -21,7 +21,11 @@ sich rund **10 Minuten** Gesamtdauer ergeben.
 - ✏️ **Animierte Comic-Figur** je Übung (illustrierte SVG-Figur, die die Bewegung
   vorführt) plus kurzer Bewegungshinweis. Auf dem Startbildschirm steht zu jeder
   Übung zusätzlich eine kurze Beschreibung (1–2 Sätze).
-- 📱 **Responsiv** und **offline lauffähig** – keine externen Abhängigkeiten.
+- 📱 **Voll responsiv** – die Trainingsansicht passt ohne Scrollen aufs Handy
+  (Timer und Figur nebeneinander, Footer während des Trainings ausgeblendet).
+- 🔆 **Bildschirm bleibt an** – während des Trainings verhindert die Wake-Lock-API
+  (sofern vom Browser unterstützt), dass sich der Bildschirm abschaltet.
+- 💻 **Offline lauffähig** – keine externen Abhängigkeiten.
 
 ## Das Programm
 

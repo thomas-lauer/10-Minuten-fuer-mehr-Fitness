@@ -145,6 +145,26 @@
     setTimeout(() => beep(880, 400, 0.2), 220);
   }
 
+  // ---- Wake Lock: Bildschirm waehrend des Trainings anlassen -------------
+  // Browser lösen den Wake Lock automatisch, wenn der Tab in den Hintergrund
+  // geht -> beim Zurueckkehren (visibilitychange) neu anfordern.
+  let wakeLock = null;
+  async function requestWakeLock() {
+    try {
+      if ('wakeLock' in navigator) {
+        wakeLock = await navigator.wakeLock.request('screen');
+        wakeLock.addEventListener('release', function () { wakeLock = null; });
+      }
+    } catch (e) {
+      // Nicht unterstuetzt oder abgelehnt -> still ignorieren.
+    }
+  }
+  async function releaseWakeLock() {
+    try {
+      if (wakeLock) { await wakeLock.release(); wakeLock = null; }
+    } catch (e) { /* ignorieren */ }
+  }
+
   // ---- Rendering: Startbildschirm ----------------------------------------
   function renderStart() {
     el.startSketch.innerHTML = SKETCHES[PROGRAM[0].sketch] || '';
@@ -311,6 +331,7 @@
   // ---- Steuerung ---------------------------------------------------------
   function start() {
     ensureAudio();
+    requestWakeLock();
     state.phase = 'running';
     state.segIndex = 0;
     el.startScreen.hidden = true;
@@ -353,6 +374,7 @@
 
   function reset() {
     stopLoop();
+    releaseWakeLock();
     state.phase = 'idle';
     state.segIndex = 0;
     el.pauseBtn.textContent = '⏸ Pause';
@@ -364,6 +386,7 @@
 
   function finish() {
     stopLoop();
+    releaseWakeLock();
     state.phase = 'finished';
     el.app.dataset.phase = 'finished';
     el.stage.hidden = true;
@@ -381,6 +404,10 @@
 
   // ---- Tab-Wechsel: bei Rueckkehr Anzeige sofort auffrischen --------------
   document.addEventListener('visibilitychange', function () {
+    if (!document.hidden && (state.phase === 'running' || state.phase === 'paused')) {
+      // Wake Lock wird beim Verlassen des Tabs automatisch geloest -> erneut anfordern.
+      requestWakeLock();
+    }
     if (!document.hidden && state.phase === 'running') {
       // Beim Zurueckkehren die Anzeige sofort auffrischen (die Restzeit
       // wird ohnehin aus performance.now() korrekt neu berechnet).
