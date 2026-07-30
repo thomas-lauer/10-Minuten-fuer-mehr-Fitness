@@ -1,163 +1,146 @@
 /*
  * sketches.js
- * Animierte, handgezeichnet wirkende Strichfiguren (Inline-SVG) je Segment.
+ * Illustrierte Flat-Design-Figuren (Inline-SVG) je Segment.
  *
- * - viewBox 0 0 100 130, damit alle Figuren gleich skalieren.
- * - Alle Linien nutzen "currentColor" -> Farbe kommt aus dem CSS (theme-faehig).
- * - Bewegte Teile stecken in Gruppen mit Klassen "sk-*"; die eigentliche
- *   Animation (@keyframes) und der Drehpunkt (transform-origin) liegen in
- *   styles.css und werden ueber die Wurzelklasse "anim-<key>" ausgewaehlt.
- *   So bleibt das SVG-Markup schlank und die Bewegung zentral steuerbar.
+ * - viewBox 0 0 140 200 (Hochformat), damit alle Figuren gleich skalieren.
+ * - Eigene Comic-Farbwelt (Haut, Haare, Shirt, Hose) statt currentColor.
+ * - Bewegte Teile stecken in Gruppen (fl-fig / fl-upper / fl-lower /
+ *   fl-armL/R / fl-legL/R). @keyframes und Drehpunkte liegen in styles.css,
+ *   ausgewaehlt ueber die Wurzelklasse "anim-fl-<key>" am <svg>.
  *
- * Der Schluessel entspricht dem Feld "sketch" in exercises.js.
- * Zusaetzlich gibt es einen "pause"-Key fuer die Pausen-Segmente.
+ * Der Schluessel entspricht dem Feld "sketch" in exercises.js
+ * (+ "pause" fuer die Pausen-Segmente).
  */
 
-const SK_ATTRS = 'fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"';
+const C = {
+  skin:  '#e8b48f',
+  hair:  '#42301f',
+  shirt: '#4a86c5',
+  shorts:'#2f3a4a',
+  shoe:  '#20232b',
+  eye:   '#3a2a20',
+};
+
+// Kopf inkl. Haare und angedeuteter Augen.
+const HEAD = `
+  <circle cx="70" cy="34" r="16" fill="${C.skin}"/>
+  <path d="M53 35 Q54 14 70 14 Q86 14 87 35 Q80 23 70 23 Q60 23 53 35 Z" fill="${C.hair}"/>
+  <circle cx="64" cy="34" r="2" fill="${C.eye}"/>
+  <circle cx="76" cy="34" r="2" fill="${C.eye}"/>`;
+
+// Torso / Shirt.
+const TORSO = `<path d="M53 58 Q70 50 87 58 L84 104 Q70 110 56 104 Z" fill="${C.shirt}"/>`;
+
+// Shorts ueber der Huefte.
+const SHORTS = `<path d="M53 100 h34 v13 l-5 13 h-8 l-4 -12 -4 12 h-8 l-5 -13 z" fill="${C.shorts}"/>`;
+
+// --- Beine ---
+function legsNormal() {
+  return `
+    <path d="M64 118 L60 176" fill="none" stroke="${C.skin}" stroke-width="13" stroke-linecap="round"/>
+    <path d="M76 118 L80 176" fill="none" stroke="${C.skin}" stroke-width="13" stroke-linecap="round"/>
+    <ellipse cx="59" cy="178" rx="8" ry="4" fill="${C.shoe}"/>
+    <ellipse cx="81" cy="178" rx="8" ry="4" fill="${C.shoe}"/>`;
+}
+function legsWide() {
+  return `
+    <path d="M64 116 L48 172" fill="none" stroke="${C.skin}" stroke-width="13" stroke-linecap="round"/>
+    <path d="M76 116 L92 172" fill="none" stroke="${C.skin}" stroke-width="13" stroke-linecap="round"/>
+    <ellipse cx="47" cy="174" rx="8" ry="4" fill="${C.shoe}"/>
+    <ellipse cx="93" cy="174" rx="8" ry="4" fill="${C.shoe}"/>`;
+}
+function legsMarch() {
+  return `
+    <g class="fl-legL"><path d="M67 118 L64 176" fill="none" stroke="${C.skin}" stroke-width="13" stroke-linecap="round"/><ellipse cx="63" cy="178" rx="8" ry="4" fill="${C.shoe}"/></g>
+    <g class="fl-legR"><path d="M73 118 L76 176" fill="none" stroke="${C.skin}" stroke-width="13" stroke-linecap="round"/><ellipse cx="77" cy="178" rx="8" ry="4" fill="${C.shoe}"/></g>`;
+}
+
+// --- Arme (Hand als Kreis am Ende) ---
+function hand(x, y) { return `<circle cx="${x}" cy="${y}" r="5.5" fill="${C.skin}"/>`; }
+function armStraight(side, cls) {
+  const sx = side === 'L' ? 55 : 85;
+  return `<g class="fl-arm${side}${cls ? ' ' + cls : ''}">
+    <path d="M${sx} 62 L${sx} 100" fill="none" stroke="${C.skin}" stroke-width="11" stroke-linecap="round"/>
+    <path d="M${sx} 62 L${sx} 78" fill="none" stroke="${C.shirt}" stroke-width="13" stroke-linecap="round"/>
+    ${hand(sx, 101)}</g>`;
+}
+function armOut(side) {
+  const L = side === 'L';
+  const sx = L ? 55 : 85, ex = L ? 44 : 96, hx = L ? 51 : 89;
+  return `<g class="fl-arm${side}">
+    <path d="M${sx} 62 L${ex} 92" fill="none" stroke="${C.skin}" stroke-width="11" stroke-linecap="round"/>
+    <path d="M${sx} 62 L${hx} 78" fill="none" stroke="${C.shirt}" stroke-width="13" stroke-linecap="round"/>
+    ${hand(ex, 93)}</g>`;
+}
+function armUp(side) {
+  const L = side === 'L';
+  const sx = L ? 55 : 85, ex = L ? 40 : 100;
+  return `<path d="M${sx} 62 Q${L ? 44 : 96} 46 ${ex} 36" fill="none" stroke="${C.skin}" stroke-width="11" stroke-linecap="round"/>${hand(ex, 35)}`;
+}
+function armHip(side) {
+  const L = side === 'L';
+  const sx = L ? 55 : 85;
+  return `<path d="M${sx} 62 Q${L ? 46 : 94} 82 ${L ? 60 : 80} 100" fill="none" stroke="${C.skin}" stroke-width="10" stroke-linecap="round"/>`;
+}
+function armHold(side) {
+  const L = side === 'L';
+  const sx = L ? 55 : 85;
+  return `<path d="M${sx} 62 Q${L ? 52 : 88} 80 ${L ? 66 : 74} 90" fill="none" stroke="${C.skin}" stroke-width="10" stroke-linecap="round"/>`;
+}
+function armGolf(side) {
+  const L = side === 'L';
+  const sx = L ? 55 : 85;
+  return `<path d="M${sx} 62 Q${L ? 74 : 90} 48 96 38" fill="none" stroke="${C.skin}" stroke-width="10" stroke-linecap="round"/>`;
+}
+function armHang(side) {
+  const L = side === 'L';
+  const sx = L ? 55 : 85;
+  return `<g class="fl-arm${side}"><path d="M${sx} 62 Q${L ? 58 : 82} 82 ${L ? 55 : 85} 100" fill="none" stroke="${C.skin}" stroke-width="11" stroke-linecap="round"/>${hand(L ? 55 : 85, 101)}</g>`;
+}
+
+// Zusammenbau einer Figur.
+function fig(key, lower, upperArms, opts) {
+  opts = opts || {};
+  const legs = opts.legs || legsNormal();
+  return `
+    <svg viewBox="0 0 140 200" class="sketch-svg anim-fl-${key}" aria-hidden="true">
+      <g class="fl-fig">
+        <g class="fl-lower">${legs}${SHORTS}</g>
+        <g class="fl-upper">${TORSO}${upperArms}${HEAD}</g>
+      </g>
+    </svg>`;
+}
 
 const SKETCHES = {
-  // 1 Lymphatische Spruenge: ganze Figur federt hoch/runter ueber dem Boden.
-  spruenge: `
-    <svg viewBox="0 0 100 130" class="sketch-svg anim-spruenge" aria-hidden="true">
-      <line x1="26" y1="114" x2="74" y2="114" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
-      <g class="sk-fig" ${SK_ATTRS}>
-        <circle cx="50" cy="20" r="9"/>
-        <path d="M50 29 L50 66"/>
-        <path d="M50 40 Q42 50 41 60"/>
-        <path d="M50 40 Q58 50 59 60"/>
-        <path d="M50 66 L45 98"/>
-        <path d="M50 66 L55 98"/>
-      </g>
-    </svg>`,
+  // 1 Lymphatische Spruenge: ganze Figur federt (Beine zusammen, Arme leicht aussen)
+  spruenge: fig('spruenge', null, armOut('L') + armOut('R')),
 
-  // 2 Bodywaves: Oberkoerper wogt (Rotation + sanftes Heben) -> Wellenbewegung.
-  bodywaves: `
-    <svg viewBox="0 0 100 130" class="sketch-svg anim-bodywaves" aria-hidden="true">
-      <g class="sk-fig" ${SK_ATTRS}>
-        <path d="M50 66 L45 98"/>
-        <path d="M50 66 L55 98"/>
-        <g class="sk-upper">
-          <circle cx="50" cy="20" r="9"/>
-          <path d="M50 29 L50 66"/>
-          <path d="M50 40 Q40 34 34 26"/>
-          <path d="M50 40 Q60 34 66 26"/>
-        </g>
-      </g>
-    </svg>`,
+  // 2 Bodywaves: Oberkoerper wogt, Arme erhoben
+  bodywaves: fig('bodywaves', null, armUp('L') + armUp('R')),
 
-  // 3 Hueftdrehungen: Huefte/Beine kreisen, Oberkoerper bleibt ruhig.
-  hueftdrehungen: `
-    <svg viewBox="0 0 100 130" class="sketch-svg anim-hueftdrehungen" aria-hidden="true">
-      <ellipse cx="50" cy="70" rx="22" ry="9" fill="none" stroke="currentColor" stroke-width="2" opacity="0.35" stroke-dasharray="4 5"/>
-      <g ${SK_ATTRS}>
-        <circle cx="50" cy="20" r="9"/>
-        <path d="M50 29 L50 60"/>
-        <path d="M50 38 Q42 46 40 56"/>
-        <path d="M50 38 Q58 46 60 56"/>
-        <g class="sk-hip">
-          <path d="M50 60 L45 92"/>
-          <path d="M50 60 L55 92"/>
-        </g>
-      </g>
-    </svg>`,
+  // 3 Hueftdrehungen: Haende in die Huefte, Huefte kreist
+  hueftdrehungen: fig('hueftdrehungen', null, armHip('L') + armHip('R')),
 
-  // 4 Armschwuenge: beide Arme schwingen gegengleich um die Schulter.
-  armschwuenge: `
-    <svg viewBox="0 0 100 130" class="sketch-svg anim-armschwuenge" aria-hidden="true">
-      <g ${SK_ATTRS}>
-        <circle cx="50" cy="20" r="9"/>
-        <path d="M50 29 L50 66"/>
-        <path d="M50 66 L45 98"/>
-        <path d="M50 66 L55 98"/>
-        <g class="sk-arm-r"><path d="M50 40 L50 66"/></g>
-        <g class="sk-arm-l"><path d="M50 40 L50 66"/></g>
-      </g>
-    </svg>`,
+  // 4 Armschwuenge: Arme schwingen gegengleich
+  armschwuenge: fig('armschwuenge', null, armStraight('L') + armStraight('R')),
 
-  // 5 Tote Arme: Oberkoerper dreht hin und her, die losen Arme schlackern mit.
-  'tote-arme': `
-    <svg viewBox="0 0 100 130" class="sketch-svg anim-tote-arme" aria-hidden="true">
-      <g ${SK_ATTRS}>
-        <path d="M50 66 L45 98"/>
-        <path d="M50 66 L55 98"/>
-        <g class="sk-twist">
-          <circle cx="50" cy="20" r="9"/>
-          <path d="M50 29 L50 66"/>
-          <path d="M50 40 Q47 54 48 64"/>
-          <path d="M50 40 Q53 54 52 64"/>
-        </g>
-      </g>
-    </svg>`,
+  // 5 Tote Arme: Oberkoerper dreht, lose Arme schwingen mit
+  'tote-arme': fig('tote-arme', null, armHang('L') + armHang('R')),
 
-  // 6 Golfschwuenge: Rumpf rotiert, Arme diagonal nach oben mitgefuehrt.
-  golfschwuenge: `
-    <svg viewBox="0 0 100 130" class="sketch-svg anim-golfschwuenge" aria-hidden="true">
-      <g ${SK_ATTRS}>
-        <path d="M50 66 L43 98"/>
-        <path d="M50 66 L57 98"/>
-        <g class="sk-golf">
-          <circle cx="50" cy="22" r="9"/>
-          <path d="M50 31 L50 66"/>
-          <path d="M50 44 Q64 40 74 28"/>
-          <path d="M50 44 Q60 40 74 28"/>
-        </g>
-      </g>
-    </svg>`,
+  // 6 Golfschwuenge: Rumpf rotiert, Arme diagonal nach oben
+  golfschwuenge: fig('golfschwuenge', null, armGolf('L') + armGolf('R')),
 
-  // 7 Marschieren: Beine heben abwechselnd, Arme schwingen gegengleich.
-  marschieren: `
-    <svg viewBox="0 0 100 130" class="sketch-svg anim-marschieren" aria-hidden="true">
-      <g ${SK_ATTRS}>
-        <circle cx="50" cy="20" r="9"/>
-        <path d="M50 29 L50 66"/>
-        <g class="sk-arm-r"><path d="M50 40 L50 64"/></g>
-        <g class="sk-arm-l"><path d="M50 40 L50 64"/></g>
-        <g class="sk-leg-r"><path d="M50 66 L50 98"/></g>
-        <g class="sk-leg-l"><path d="M50 66 L50 98"/></g>
-      </g>
-    </svg>`,
+  // 7 Marschieren: Beine abwechselnd, Arme gegengleich
+  marschieren: fig('marschieren', null, armStraight('L') + armStraight('R'), { legs: legsMarch() }),
 
-  // 8 Ballett-Squats: breiter Stand, Figur geht tief und wieder hoch.
-  'ballett-squats': `
-    <svg viewBox="0 0 100 130" class="sketch-svg anim-ballett-squats" aria-hidden="true">
-      <g class="sk-fig" ${SK_ATTRS}>
-        <circle cx="50" cy="22" r="9"/>
-        <path d="M50 31 L50 64"/>
-        <path d="M50 40 Q34 42 22 34"/>
-        <path d="M50 40 Q66 42 78 34"/>
-        <path d="M50 64 Q34 72 30 92 L24 104"/>
-        <path d="M50 64 Q66 72 70 92 L76 104"/>
-      </g>
-    </svg>`,
+  // 8 Ballett-Squats: breiter Stand, tief und hoch, Arme geoeffnet
+  'ballett-squats': fig('ballett-squats', null, armOut('L') + armOut('R'), { legs: legsWide() }),
 
-  // 9 Tiefe Halteposition: ruhiger tiefer Stand, Haende vor der Brust, Atmen.
-  halteposition: `
-    <svg viewBox="0 0 100 130" class="sketch-svg anim-halteposition" aria-hidden="true">
-      <g class="sk-fig" ${SK_ATTRS}>
-        <circle cx="50" cy="22" r="9"/>
-        <path d="M50 31 L50 66"/>
-        <path d="M50 42 Q42 48 48 55"/>
-        <path d="M50 42 Q58 48 52 55"/>
-        <path d="M50 66 Q36 74 34 92 L30 104"/>
-        <path d="M50 66 Q64 74 66 92 L70 104"/>
-      </g>
-    </svg>`,
+  // 9 Tiefe Halteposition: breiter Stand, Haende vor der Brust, ruhiges Atmen
+  halteposition: fig('halteposition', null, armHold('L') + armHold('R'), { legs: legsWide() }),
 
-  // Pause: entspanntes Stehen mit ruhiger Atembewegung.
-  pause: `
-    <svg viewBox="0 0 100 130" class="sketch-svg anim-pause" aria-hidden="true">
-      <g class="sk-fig" ${SK_ATTRS}>
-        <circle cx="50" cy="24" r="9"/>
-        <path d="M50 33 L50 72"/>
-        <path d="M50 44 Q41 54 41 66"/>
-        <path d="M50 44 Q59 54 59 66"/>
-        <path d="M50 72 L45 102"/>
-        <path d="M50 72 L55 102"/>
-      </g>
-      <g stroke="currentColor" fill="none" stroke-linecap="round">
-        <path class="sk-breath" d="M66 18 q9 -2 9 6 t-9 6" stroke-width="2" opacity="0.5"/>
-      </g>
-    </svg>`,
+  // Pause: entspanntes Stehen, ruhiges Atmen
+  pause: fig('pause', null, armStraight('L') + armStraight('R')),
 };
 
 if (typeof module !== 'undefined' && module.exports) {

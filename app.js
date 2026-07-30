@@ -149,7 +149,10 @@
   function renderStart() {
     el.startSketch.innerHTML = SKETCHES[PROGRAM[0].sketch] || '';
     el.startList.innerHTML = PROGRAM
-      .map((ex, i) => '<li><span class="num">' + (i + 1) + '</span>' + escapeHtml(ex.name) + '</li>')
+      .map((ex, i) =>
+        '<li><span class="num">' + (i + 1) + '</span>' +
+        '<span class="txt"><strong>' + escapeHtml(ex.name) + '</strong>' +
+        '<em>' + escapeHtml(ex.beschreibung) + '</em></span></li>')
       .join('');
     el.totalText.textContent = formatZeit(GESAMTDAUER);
   }

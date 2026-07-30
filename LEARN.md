@@ -79,3 +79,21 @@ Verifiziert mit `getScreenCTM()`: der Schulterpunkt driftet unter Rotation 0 px.
 **Testbarkeit:** Ob eine Animation greift, lässt sich headless prüfen, indem man je
 Skizze `getComputedStyle(part).animationName` liest (≠ `none`). Sichtbare Frames sind
 dafür nicht nötig – praktisch, wenn das Vorschau-Pane nicht rendert (siehe Punkt 3).
+
+## 8. Bildstil-Iteration → illustrierte Flat-Design-Figuren
+
+Die reinen Strichmännchen erklärten die Übungen schlecht. Nach mehreren Varianten
+(animierte Sticks, Silhouette, echtes Videobild, Voxel/Minecraft, isometrisch) fiel
+die Wahl auf **illustrierte Flat-Design-Figuren** (Comic-Person mit Kleidung).
+
+Nützliche Bausteine dabei:
+- **Figuren generisch bauen:** ein `fig(...)`-Baukasten mit Teil-Helfern
+  (`armStraight`, `legsWide`, `HEAD` …) statt 10× kompletter SVGs – neue Pose = neue
+  Arm-/Bein-Kombination, gemeinsame Farb-/Kopf-Basis.
+- **Headless-Sanity-Check ohne Pixel:** Da das Vorschau-Pane keine Frames rendert,
+  prüft `element.getBBox()` je Figur, ob alle Teile innerhalb der viewBox liegen und
+  nicht leer sind – fängt grobe Geometriefehler ab, ohne die Figur „sehen" zu müssen.
+- **Sackgasse Rasterung:** Der Umweg, SVGs im Browser per Canvas → PNG-`toDataURL`
+  zu rastern und das Base64 herauszukopieren, scheiterte an Kopier-/Längenfehlern der
+  langen Base64-Strings. Für Selbstkontrolle sind `getComputedStyle`/`getBBox`
+  zuverlässiger.

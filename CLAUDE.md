@@ -84,18 +84,23 @@ aktuelle Segment (`.fill` width), `renderSegment()` setzt `is-current`/`is-done`
 Der Container `.app` trägt `data-phase` (`uebung`/`pause`/…); CSS schaltet darüber
 zwischen Grün (Übung) und Ocker (Pause) um.
 
-### Animierte Skizzen
-Jede Figur in `sketches.js` besteht aus einem statischen Grundgerüst und bewegten
-Teil-Gruppen mit Klassen `sk-*` (z. B. `sk-arm-r`, `sk-hip`, `sk-fig`). Die
-eigentliche Bewegung (`@keyframes`) und der Drehpunkt (`transform-origin` in
-viewBox-Einheiten) liegen in `styles.css` und werden über die Wurzelklasse
-`anim-<key>` am `<svg>` ausgewählt. Voraussetzung ist `transform-box: view-box`
-(global auf `.sk-*` gesetzt), damit `transform-origin` in den viewBox-Koordinaten
-0–100 interpretiert wird – so rotieren Arme sauber um die Schulter (50,40), Beine
-um die Hüfte (50,66). `prefers-reduced-motion` schaltet alle Skizzen-Animationen ab.
+### Animierte Flat-Design-Figuren
+Die Übungen werden als illustrierte Comic-Figuren (Flat-Design) dargestellt.
+`sketches.js` baut jede Figur über kleine Helfer-Funktionen (`fig`, `armStraight`,
+`legsWide`, `HEAD`, `TORSO` …) aus einem gemeinsamen Bausatz zusammen – viewBox
+`0 0 140 200`, eigene Farbpalette (`C = {skin, hair, shirt, shorts, shoe}`).
+Bewegte Teile stecken in Gruppen `fl-fig` / `fl-upper` / `fl-lower` / `fl-armL/R`
+/ `fl-legL/R`. Die eigentliche Bewegung (`@keyframes`) und der Drehpunkt
+(`transform-origin` in viewBox-Einheiten) liegen in `styles.css`, ausgewählt über
+die Wurzelklasse `anim-fl-<key>` am `<svg>`. Voraussetzung ist
+`transform-box: view-box` (auf `.fl-*` gesetzt), damit `transform-origin` in
+viewBox-Koordinaten interpretiert wird – so rotieren Arme um die Schulter (55/85,62)
+und Beine um die Hüfte (70,118). `prefers-reduced-motion` schaltet alle Animationen ab.
 
 Zusätzlich hat jede Übung in `exercises.js` ein kurzes Feld `hinweis` (Bewegungs-Cue,
 z. B. „Arme schwingen · vor–zurück"), das als Pill unter dem Titel angezeigt wird.
+Die 1–2-Satz-`beschreibung` erscheint sowohl während der Übung als auch vorab in
+der Übungsliste des Startbildschirms.
 
 ## Anpassen
 
@@ -103,10 +108,10 @@ z. B. „Arme schwingen · vor–zurück"), das als Pill unter dem Titel angezei
   `sketch`-Key muss in `SKETCHES` (`sketches.js`) existieren.
 - **Pausenlänge:** `PAUSE_DAUER` in `exercises.js`.
 - **Bewegungshinweis:** Feld `hinweis` je Übung in `exercises.js`.
-- **Neue Skizze:** SVG-String unter neuem Key in `SKETCHES`; `viewBox="0 0 100 130"`
-  und `stroke="currentColor"` beibehalten (theme-fähig). Für Bewegung bewegte Teile
-  in eine `sk-*`-Gruppe legen, am `<svg>` `anim-<key>` ergänzen und in `styles.css`
-  passende `@keyframes` + `transform-origin` definieren.
+- **Neue Skizze:** neuen Eintrag in `SKETCHES` über die `fig(...)`-Helfer bauen
+  (viewBox `0 0 140 200`). Für Bewegung bewegte Teile in eine `fl-*`-Gruppe legen,
+  am `<svg>` `anim-fl-<key>` ergänzen und in `styles.css` passende `@keyframes` +
+  `transform-origin` definieren.
 - **Tempo/Genauigkeit der Anzeige:** `TICK_MS` in `app.js`.
 
 ## Lokal ausführen
