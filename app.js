@@ -22,6 +22,7 @@
         typ: 'uebung',
         name: ex.name,
         beschreibung: ex.beschreibung,
+        hinweis: ex.hinweis,
         dauer: ex.dauer,
         sketch: ex.sketch,
         exIndex: i,        // 0-basiert
@@ -71,6 +72,7 @@
     phaseBadge: document.getElementById('phaseBadge'),
     segCounter: document.getElementById('segCounter'),
     segName: document.getElementById('segName'),
+    segHint: document.getElementById('segHint'),
     segDesc: document.getElementById('segDesc'),
     segNext: document.getElementById('segNext'),
     stageSketch: document.getElementById('stageSketch'),
@@ -191,12 +193,16 @@
       el.phaseBadge.textContent = 'Übung';
       el.segCounter.textContent = 'Übung ' + seg.exNummer + ' von ' + ANZAHL_UEBUNGEN;
       el.segName.textContent = seg.name;
+      el.segHint.textContent = seg.hinweis || '';
+      el.segHint.hidden = !seg.hinweis;
       el.segDesc.textContent = seg.beschreibung;
       el.segNext.hidden = true;
     } else {
       el.phaseBadge.textContent = 'Pause';
       el.segCounter.textContent = 'Kurze Pause';
       el.segName.textContent = 'Durchatmen';
+      el.segHint.textContent = 'Locker stehen · ruhig atmen';
+      el.segHint.hidden = false;
       el.segDesc.textContent = 'Locker bleiben und kurz erholen.';
       el.segNext.hidden = false;
       el.segNext.textContent = 'Als Nächstes: ' + seg.nextNummer + '. ' + seg.nextName;

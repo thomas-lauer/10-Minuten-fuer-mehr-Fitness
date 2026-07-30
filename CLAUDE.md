@@ -16,7 +16,7 @@ Technischer Überblick über die App „10 Minuten für mehr Fitness".
 | `index.html` | Grundgerüst: Start-, Trainings- und Abschlussbereich, Container für Timer/Zeitstrahl/Controls. |
 | `styles.css` | Sketch-Look, ruhige Qigong-Farbwelt (Grün/Erdtöne), Timer-Ring, Zeitstrahl, Responsive- und Dark-Mode. |
 | `exercises.js` | Datenmodell: `PROGRAM` (Array der Übungen) und Konstante `PAUSE_DAUER`. |
-| `sketches.js` | Objekt `SKETCHES`: Inline-SVG-Strichmännchen je Übung (+ `pause`). |
+| `sketches.js` | Objekt `SKETCHES`: animierte Inline-SVG-Figuren je Übung (+ `pause`). |
 | `app.js` | Gesamte Ablauflogik: Timeline-Aufbau, State-Machine, Timer, Zeitstrahl, Audio, Steuerung. |
 | `README.md` | Nutzerdoku / Programmbeschreibung. |
 | `LEARN.md` | Erkenntnisse und gelöste Probleme. |
@@ -84,13 +84,29 @@ aktuelle Segment (`.fill` width), `renderSegment()` setzt `is-current`/`is-done`
 Der Container `.app` trägt `data-phase` (`uebung`/`pause`/…); CSS schaltet darüber
 zwischen Grün (Übung) und Ocker (Pause) um.
 
+### Animierte Skizzen
+Jede Figur in `sketches.js` besteht aus einem statischen Grundgerüst und bewegten
+Teil-Gruppen mit Klassen `sk-*` (z. B. `sk-arm-r`, `sk-hip`, `sk-fig`). Die
+eigentliche Bewegung (`@keyframes`) und der Drehpunkt (`transform-origin` in
+viewBox-Einheiten) liegen in `styles.css` und werden über die Wurzelklasse
+`anim-<key>` am `<svg>` ausgewählt. Voraussetzung ist `transform-box: view-box`
+(global auf `.sk-*` gesetzt), damit `transform-origin` in den viewBox-Koordinaten
+0–100 interpretiert wird – so rotieren Arme sauber um die Schulter (50,40), Beine
+um die Hüfte (50,66). `prefers-reduced-motion` schaltet alle Skizzen-Animationen ab.
+
+Zusätzlich hat jede Übung in `exercises.js` ein kurzes Feld `hinweis` (Bewegungs-Cue,
+z. B. „Arme schwingen · vor–zurück"), das als Pill unter dem Titel angezeigt wird.
+
 ## Anpassen
 
 - **Übung/Dauer ändern oder ergänzen:** `PROGRAM` in `exercises.js`. Neuer
   `sketch`-Key muss in `SKETCHES` (`sketches.js`) existieren.
 - **Pausenlänge:** `PAUSE_DAUER` in `exercises.js`.
+- **Bewegungshinweis:** Feld `hinweis` je Übung in `exercises.js`.
 - **Neue Skizze:** SVG-String unter neuem Key in `SKETCHES`; `viewBox="0 0 100 130"`
-  und `stroke="currentColor"` beibehalten (theme-fähig).
+  und `stroke="currentColor"` beibehalten (theme-fähig). Für Bewegung bewegte Teile
+  in eine `sk-*`-Gruppe legen, am `<svg>` `anim-<key>` ergänzen und in `styles.css`
+  passende `@keyframes` + `transform-origin` definieren.
 - **Tempo/Genauigkeit der Anzeige:** `TICK_MS` in `app.js`.
 
 ## Lokal ausführen

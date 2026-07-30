@@ -222,7 +222,7 @@ body {
   color: var(--ink);
 }
 
-.stage__sketch { width: 96px; color: var(--green); }
+.stage__sketch { width: 120px; color: var(--green); }
 .sketch-svg { width: 100%; height: auto; display: block; }
 
 /* Pausen-Zustand: warme Farbe */
@@ -336,7 +336,92 @@ body {
   }
 }
 
+/* ---------- Bewegungshinweis (Cue) ---------- */
+.stage__hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.1rem 0 0.7rem;
+  padding: 0.28rem 0.7rem;
+  background: var(--green-soft);
+  color: var(--green-deep);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.stage__hint::before { content: "↻"; font-size: 1rem; }
+.app[data-phase="pause"] .stage__hint { background: var(--pause-soft); color: #9a6a12; }
+
+/* =========================================================================
+   Animierte Skizzen
+   Bewegte Teile stecken in Gruppen "sk-*"; hier liegen Drehpunkt und
+   @keyframes. Ausgewaehlt wird ueber die Wurzelklasse "anim-<key>" am <svg>.
+   transform-box: view-box -> transform-origin in viewBox-Einheiten (0..100).
+   ========================================================================= */
+.sketch-svg [class^="sk-"] { transform-box: view-box; }
+
+/* Drehpunkte (Schulter 50,40 · Huefte 50,66 · Fuesse 50,104) */
+.sk-arm-l, .sk-arm-r { transform-origin: 50px 40px; }
+.sk-leg-l, .sk-leg-r { transform-origin: 50px 66px; }
+.sk-upper, .sk-twist, .sk-golf { transform-origin: 50px 66px; }
+.sk-hip { transform-origin: 50px 60px; }
+
+/* 1 Spruenge – federn hoch/runter */
+@keyframes sk-jump {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  18%      { transform: translateY(3px) scaleY(0.92); }
+  50%      { transform: translateY(-16px) scaleY(1.04); }
+  82%      { transform: translateY(3px) scaleY(0.92); }
+}
+.anim-spruenge .sk-fig { transform-origin: 50px 104px; animation: sk-jump 0.9s ease-in-out infinite; }
+
+/* 2 Bodywaves – Oberkoerper wogt */
+@keyframes sk-wave { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
+@keyframes sk-bob  { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+.anim-bodywaves .sk-upper { animation: sk-wave 2s ease-in-out infinite; }
+.anim-bodywaves .sk-fig   { animation: sk-bob 2s ease-in-out infinite; }
+
+/* 3 Hueftdrehungen – Huefte kreist */
+@keyframes sk-hip {
+  0%   { transform: translate(6px, 0); }
+  25%  { transform: translate(0, 3px); }
+  50%  { transform: translate(-6px, 0); }
+  75%  { transform: translate(0, -3px); }
+  100% { transform: translate(6px, 0); }
+}
+.anim-hueftdrehungen .sk-hip { animation: sk-hip 2.2s linear infinite; }
+
+/* 4 Armschwuenge – Arme gegengleich */
+@keyframes sk-swing { 0%, 100% { transform: rotate(28deg); } 50% { transform: rotate(-28deg); } }
+.anim-armschwuenge .sk-arm-r { animation: sk-swing 1.4s ease-in-out infinite; }
+.anim-armschwuenge .sk-arm-l { animation: sk-swing 1.4s ease-in-out infinite; animation-delay: -0.7s; }
+
+/* 5 Tote Arme – Oberkoerper dreht, Arme schlackern mit */
+@keyframes sk-twist { 0%, 100% { transform: rotate(-16deg); } 50% { transform: rotate(16deg); } }
+.anim-tote-arme .sk-twist { animation: sk-twist 1.8s ease-in-out infinite; }
+
+/* 6 Golfschwuenge – Rumpf rotiert */
+@keyframes sk-golf { 0%, 100% { transform: rotate(-20deg); } 60% { transform: rotate(16deg); } }
+.anim-golfschwuenge .sk-golf { animation: sk-golf 2.2s ease-in-out infinite; }
+
+/* 7 Marschieren – Beine abwechselnd, Arme gegengleich */
+@keyframes sk-march { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(20deg); } }
+.anim-marschieren .sk-leg-r { animation: sk-march 1.1s ease-in-out infinite; }
+.anim-marschieren .sk-leg-l { animation: sk-march 1.1s ease-in-out infinite; animation-delay: -0.55s; }
+.anim-marschieren .sk-arm-r { animation: sk-swing 1.1s ease-in-out infinite; animation-delay: -0.55s; }
+.anim-marschieren .sk-arm-l { animation: sk-swing 1.1s ease-in-out infinite; }
+
+/* 8 Ballett-Squats – tief und hoch */
+@keyframes sk-squat { 0%, 100% { transform: translateY(0) scaleY(1); } 50% { transform: translateY(9px) scaleY(0.8); } }
+.anim-ballett-squats .sk-fig { transform-origin: 50px 104px; animation: sk-squat 2s ease-in-out infinite; }
+
+/* 9 Halteposition + Pause – ruhiges Atmen */
+@keyframes sk-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+.anim-halteposition .sk-fig,
+.anim-pause .sk-fig { transform-origin: 50px 104px; animation: sk-breathe 3.6s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
   .timer.is-ending .timer__text { animation: none; }
   .timer__progress { transition: none; }
+  .sketch-svg [class^="sk-"] { animation: none !important; }
 }

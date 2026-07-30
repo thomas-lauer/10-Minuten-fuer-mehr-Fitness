@@ -62,3 +62,20 @@ Endnutzer genügt weiterhin der Doppelklick auf `index.html`.
 Die Strichmännchen nutzen `stroke="currentColor"` statt fester Farben. Dadurch
 lassen sich Übung (Grün) und Pause (Ocker) allein über die CSS-Textfarbe des
 Containers umschalten – kein Nachzeichnen oder Farbduplikat je Zustand nötig.
+
+## 7. Statische Figuren erklärten die Übung schlecht → Animation
+
+Rückmeldung aus der Praxis: Ein einzelnes, statisches Strichmännchen vermittelt die
+eigentliche **Bewegung** nicht. Lösung: die Figuren animieren (CSS-Keyframes) und je
+Übung einen kurzen Bewegungs-Cue (`hinweis`) einblenden.
+
+**Stolperfalle Drehpunkt:** Rotiert man einen Arm/ein Bein per CSS, liegt der
+Drehpunkt standardmäßig **nicht** an der Schulter/Hüfte, sondern am Rand der
+Bounding-Box – die Gliedmaße „fliegt weg". Fix: `transform-box: view-box` auf die
+animierten Gruppen setzen; dann interpretiert der Browser `transform-origin` in den
+**viewBox-Einheiten** (0–100). So dreht der Arm exakt um die Schulter `(50,40)`.
+Verifiziert mit `getScreenCTM()`: der Schulterpunkt driftet unter Rotation 0 px.
+
+**Testbarkeit:** Ob eine Animation greift, lässt sich headless prüfen, indem man je
+Skizze `getComputedStyle(part).animationName` liest (≠ `none`). Sichtbare Frames sind
+dafür nicht nötig – praktisch, wenn das Vorschau-Pane nicht rendert (siehe Punkt 3).

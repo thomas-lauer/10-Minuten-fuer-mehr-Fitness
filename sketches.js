@@ -1,158 +1,161 @@
 /*
  * sketches.js
- * Handgezeichnet wirkende Strichmaennchen-Skizzen (Inline-SVG) je Segment.
+ * Animierte, handgezeichnet wirkende Strichfiguren (Inline-SVG) je Segment.
  *
  * - viewBox 0 0 100 130, damit alle Figuren gleich skalieren.
  * - Alle Linien nutzen "currentColor" -> Farbe kommt aus dem CSS (theme-faehig).
- * - stroke-linecap/linejoin "round" + leicht unregelmaessige Pfade = Sketch-Look.
+ * - Bewegte Teile stecken in Gruppen mit Klassen "sk-*"; die eigentliche
+ *   Animation (@keyframes) und der Drehpunkt (transform-origin) liegen in
+ *   styles.css und werden ueber die Wurzelklasse "anim-<key>" ausgewaehlt.
+ *   So bleibt das SVG-Markup schlank und die Bewegung zentral steuerbar.
  *
  * Der Schluessel entspricht dem Feld "sketch" in exercises.js.
  * Zusaetzlich gibt es einen "pause"-Key fuer die Pausen-Segmente.
  */
 
+const SK_ATTRS = 'fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"';
+
 const SKETCHES = {
-  // Lymphatische Spruenge: Figur federt hoch, Fuesse ueber dem Boden.
+  // 1 Lymphatische Spruenge: ganze Figur federt hoch/runter ueber dem Boden.
   spruenge: `
-    <svg viewBox="0 0 100 130" class="sketch-svg" aria-hidden="true">
-      <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="50" cy="24" r="10"/>
-        <path d="M50 34 Q49 55 50 72"/>
-        <path d="M50 42 Q38 40 32 30"/>
-        <path d="M50 42 Q62 40 68 30"/>
-        <path d="M50 72 Q41 88 40 100"/>
-        <path d="M50 72 Q59 88 60 100"/>
-        <path d="M28 24 q4 -6 8 0" stroke-width="2.5"/>
-        <path d="M64 24 q4 -6 8 0" stroke-width="2.5"/>
-        <path d="M50 112 q-10 4 -20 3" stroke-width="2" opacity="0.55"/>
-        <path d="M50 112 q10 4 20 3" stroke-width="2" opacity="0.55"/>
-      </g>
-    </svg>`,
-
-  // Bodywaves: wellenfoermige Wirbelsaeule.
-  bodywaves: `
-    <svg viewBox="0 0 100 130" class="sketch-svg" aria-hidden="true">
-      <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="46" cy="22" r="10"/>
-        <path d="M48 32 Q60 44 44 56 Q30 68 48 80 Q62 90 50 104"/>
-        <path d="M50 46 Q64 46 72 38"/>
-        <path d="M46 58 Q32 60 26 52"/>
-        <path d="M50 104 Q42 116 40 124"/>
-        <path d="M50 104 Q58 116 60 124"/>
-        <path d="M74 30 q6 8 0 16" stroke-width="2" opacity="0.5"/>
-      </g>
-    </svg>`,
-
-  // Hueftdrehungen: Haende in die Huefte, Kreispfeil um die Huefte.
-  hueftdrehungen: `
-    <svg viewBox="0 0 100 130" class="sketch-svg" aria-hidden="true">
-      <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <svg viewBox="0 0 100 130" class="sketch-svg anim-spruenge" aria-hidden="true">
+      <line x1="26" y1="114" x2="74" y2="114" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+      <g class="sk-fig" ${SK_ATTRS}>
         <circle cx="50" cy="20" r="9"/>
         <path d="M50 29 L50 66"/>
-        <path d="M50 40 Q40 50 36 62"/>
-        <path d="M50 40 Q60 50 64 62"/>
-        <path d="M50 66 L42 96"/>
-        <path d="M50 66 L58 96"/>
-        <path d="M24 74 a26 12 0 1 0 52 0 a26 12 0 1 0 -52 0" stroke-width="2" opacity="0.6" stroke-dasharray="4 5"/>
-        <path d="M72 70 l6 6 -8 2" stroke-width="2" opacity="0.6"/>
+        <path d="M50 40 Q42 50 41 60"/>
+        <path d="M50 40 Q58 50 59 60"/>
+        <path d="M50 66 L45 98"/>
+        <path d="M50 66 L55 98"/>
       </g>
     </svg>`,
 
-  // Armschwuenge: ein Arm vorn, einer hinten, Schwungboegen.
+  // 2 Bodywaves: Oberkoerper wogt (Rotation + sanftes Heben) -> Wellenbewegung.
+  bodywaves: `
+    <svg viewBox="0 0 100 130" class="sketch-svg anim-bodywaves" aria-hidden="true">
+      <g class="sk-fig" ${SK_ATTRS}>
+        <path d="M50 66 L45 98"/>
+        <path d="M50 66 L55 98"/>
+        <g class="sk-upper">
+          <circle cx="50" cy="20" r="9"/>
+          <path d="M50 29 L50 66"/>
+          <path d="M50 40 Q40 34 34 26"/>
+          <path d="M50 40 Q60 34 66 26"/>
+        </g>
+      </g>
+    </svg>`,
+
+  // 3 Hueftdrehungen: Huefte/Beine kreisen, Oberkoerper bleibt ruhig.
+  hueftdrehungen: `
+    <svg viewBox="0 0 100 130" class="sketch-svg anim-hueftdrehungen" aria-hidden="true">
+      <ellipse cx="50" cy="70" rx="22" ry="9" fill="none" stroke="currentColor" stroke-width="2" opacity="0.35" stroke-dasharray="4 5"/>
+      <g ${SK_ATTRS}>
+        <circle cx="50" cy="20" r="9"/>
+        <path d="M50 29 L50 60"/>
+        <path d="M50 38 Q42 46 40 56"/>
+        <path d="M50 38 Q58 46 60 56"/>
+        <g class="sk-hip">
+          <path d="M50 60 L45 92"/>
+          <path d="M50 60 L55 92"/>
+        </g>
+      </g>
+    </svg>`,
+
+  // 4 Armschwuenge: beide Arme schwingen gegengleich um die Schulter.
   armschwuenge: `
-    <svg viewBox="0 0 100 130" class="sketch-svg" aria-hidden="true">
-      <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="50" cy="22" r="9"/>
-        <path d="M50 31 L50 72"/>
-        <path d="M50 40 Q64 46 74 40"/>
-        <path d="M50 40 Q36 46 28 54"/>
-        <path d="M50 72 L42 104"/>
-        <path d="M50 72 L58 104"/>
-        <path d="M26 60 q-6 -12 4 -22" stroke-width="2" opacity="0.55"/>
-        <path d="M78 34 q8 10 2 22" stroke-width="2" opacity="0.55"/>
+    <svg viewBox="0 0 100 130" class="sketch-svg anim-armschwuenge" aria-hidden="true">
+      <g ${SK_ATTRS}>
+        <circle cx="50" cy="20" r="9"/>
+        <path d="M50 29 L50 66"/>
+        <path d="M50 66 L45 98"/>
+        <path d="M50 66 L55 98"/>
+        <g class="sk-arm-r"><path d="M50 40 L50 66"/></g>
+        <g class="sk-arm-l"><path d="M50 40 L50 66"/></g>
       </g>
     </svg>`,
 
-  // Tote Arme: Arme haengen lose, Rotationspfeil um den Rumpf.
+  // 5 Tote Arme: Oberkoerper dreht hin und her, die losen Arme schlackern mit.
   'tote-arme': `
-    <svg viewBox="0 0 100 130" class="sketch-svg" aria-hidden="true">
-      <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="50" cy="20" r="9"/>
-        <path d="M50 29 L50 70"/>
-        <path d="M50 38 Q60 54 58 66"/>
-        <path d="M50 38 Q40 54 42 66"/>
-        <path d="M50 70 L43 100"/>
-        <path d="M50 70 L57 100"/>
-        <path d="M30 44 q40 -10 40 6" stroke-width="2" opacity="0.5" stroke-dasharray="4 5"/>
-        <path d="M70 46 l2 8 -8 -3" stroke-width="2" opacity="0.5"/>
+    <svg viewBox="0 0 100 130" class="sketch-svg anim-tote-arme" aria-hidden="true">
+      <g ${SK_ATTRS}>
+        <path d="M50 66 L45 98"/>
+        <path d="M50 66 L55 98"/>
+        <g class="sk-twist">
+          <circle cx="50" cy="20" r="9"/>
+          <path d="M50 29 L50 66"/>
+          <path d="M50 40 Q47 54 48 64"/>
+          <path d="M50 40 Q53 54 52 64"/>
+        </g>
       </g>
     </svg>`,
 
-  // Golfschwuenge: Rumpf rotiert, Arme diagonal nach oben.
+  // 6 Golfschwuenge: Rumpf rotiert, Arme diagonal nach oben mitgefuehrt.
   golfschwuenge: `
-    <svg viewBox="0 0 100 130" class="sketch-svg" aria-hidden="true">
-      <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="46" cy="24" r="9"/>
-        <path d="M47 33 Q52 52 50 70"/>
-        <path d="M49 44 Q66 40 76 26"/>
-        <path d="M49 44 Q60 40 76 26"/>
-        <path d="M50 70 L42 100"/>
-        <path d="M50 70 L60 98"/>
-        <path d="M30 92 q22 -14 44 -2" stroke-width="2" opacity="0.5" stroke-dasharray="4 5"/>
+    <svg viewBox="0 0 100 130" class="sketch-svg anim-golfschwuenge" aria-hidden="true">
+      <g ${SK_ATTRS}>
+        <path d="M50 66 L43 98"/>
+        <path d="M50 66 L57 98"/>
+        <g class="sk-golf">
+          <circle cx="50" cy="22" r="9"/>
+          <path d="M50 31 L50 66"/>
+          <path d="M50 44 Q64 40 74 28"/>
+          <path d="M50 44 Q60 40 74 28"/>
+        </g>
       </g>
     </svg>`,
 
-  // Marschieren: ein Knie hoch, Arme gegengleich gebeugt.
+  // 7 Marschieren: Beine heben abwechselnd, Arme schwingen gegengleich.
   marschieren: `
-    <svg viewBox="0 0 100 130" class="sketch-svg" aria-hidden="true">
-      <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <svg viewBox="0 0 100 130" class="sketch-svg anim-marschieren" aria-hidden="true">
+      <g ${SK_ATTRS}>
         <circle cx="50" cy="20" r="9"/>
-        <path d="M50 29 L50 68"/>
-        <path d="M50 40 Q60 48 58 60"/>
-        <path d="M50 40 Q40 48 44 60"/>
-        <path d="M50 68 Q40 76 42 86 L46 100"/>
-        <path d="M50 68 L56 100"/>
+        <path d="M50 29 L50 66"/>
+        <g class="sk-arm-r"><path d="M50 40 L50 64"/></g>
+        <g class="sk-arm-l"><path d="M50 40 L50 64"/></g>
+        <g class="sk-leg-r"><path d="M50 66 L50 98"/></g>
+        <g class="sk-leg-l"><path d="M50 66 L50 98"/></g>
       </g>
     </svg>`,
 
-  // Ballett-Squats: breiter Plie-Stand, Arme weit geoeffnet.
+  // 8 Ballett-Squats: breiter Stand, Figur geht tief und wieder hoch.
   'ballett-squats': `
-    <svg viewBox="0 0 100 130" class="sketch-svg" aria-hidden="true">
-      <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <svg viewBox="0 0 100 130" class="sketch-svg anim-ballett-squats" aria-hidden="true">
+      <g class="sk-fig" ${SK_ATTRS}>
         <circle cx="50" cy="22" r="9"/>
-        <path d="M50 31 L50 66"/>
+        <path d="M50 31 L50 64"/>
         <path d="M50 40 Q34 42 22 34"/>
         <path d="M50 40 Q66 42 78 34"/>
-        <path d="M50 66 Q34 74 30 92 L24 104"/>
-        <path d="M50 66 Q66 74 70 92 L76 104"/>
+        <path d="M50 64 Q34 72 30 92 L24 104"/>
+        <path d="M50 64 Q66 72 70 92 L76 104"/>
       </g>
     </svg>`,
 
-  // Tiefe Halteposition: ruhiger tiefer Stand, Haende vor der Brust.
+  // 9 Tiefe Halteposition: ruhiger tiefer Stand, Haende vor der Brust, Atmen.
   halteposition: `
-    <svg viewBox="0 0 100 130" class="sketch-svg" aria-hidden="true">
-      <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <svg viewBox="0 0 100 130" class="sketch-svg anim-halteposition" aria-hidden="true">
+      <g class="sk-fig" ${SK_ATTRS}>
         <circle cx="50" cy="22" r="9"/>
-        <path d="M50 31 L50 68"/>
-        <path d="M50 42 Q42 48 48 56"/>
-        <path d="M50 42 Q58 48 52 56"/>
-        <path d="M50 68 Q36 76 34 94 L30 106"/>
-        <path d="M50 68 Q64 76 66 94 L70 106"/>
-        <path d="M40 14 q10 -8 20 0" stroke-width="2" opacity="0.5"/>
+        <path d="M50 31 L50 66"/>
+        <path d="M50 42 Q42 48 48 55"/>
+        <path d="M50 42 Q58 48 52 55"/>
+        <path d="M50 66 Q36 74 34 92 L30 104"/>
+        <path d="M50 66 Q64 74 66 92 L70 104"/>
       </g>
     </svg>`,
 
-  // Pause: entspanntes Stehen, Atem-Wellen.
+  // Pause: entspanntes Stehen mit ruhiger Atembewegung.
   pause: `
-    <svg viewBox="0 0 100 130" class="sketch-svg" aria-hidden="true">
-      <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="50" cy="26" r="9"/>
-        <path d="M50 35 L50 74"/>
-        <path d="M50 46 Q40 56 40 68"/>
-        <path d="M50 46 Q60 56 60 68"/>
-        <path d="M50 74 L44 104"/>
-        <path d="M50 74 L56 104"/>
-        <path d="M64 14 q8 -2 8 6 t-8 6" stroke-width="2" opacity="0.55"/>
-        <path d="M70 26 q10 -2 10 7 t-10 7" stroke-width="2" opacity="0.4"/>
+    <svg viewBox="0 0 100 130" class="sketch-svg anim-pause" aria-hidden="true">
+      <g class="sk-fig" ${SK_ATTRS}>
+        <circle cx="50" cy="24" r="9"/>
+        <path d="M50 33 L50 72"/>
+        <path d="M50 44 Q41 54 41 66"/>
+        <path d="M50 44 Q59 54 59 66"/>
+        <path d="M50 72 L45 102"/>
+        <path d="M50 72 L55 102"/>
+      </g>
+      <g stroke="currentColor" fill="none" stroke-linecap="round">
+        <path class="sk-breath" d="M66 18 q9 -2 9 6 t-9 6" stroke-width="2" opacity="0.5"/>
       </g>
     </svg>`,
 };

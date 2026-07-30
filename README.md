@@ -18,7 +18,8 @@ sich rund **10 Minuten** Gesamtdauer ergeben.
   Countdown-Piepser in den letzten 3 Sekunden.
 - 📊 **Live-Zeitstrahl** der gesamten Session – jedes Segment proportional zur
   Dauer, das aktuelle wird hervorgehoben, erledigte werden gefüllt.
-- ✏️ **Skizziertes Bild** je Übung (handgezeichnetes Strichmännchen als SVG).
+- ✏️ **Animierte Skizze** je Übung (SVG-Figur, die die Bewegung vorführt) plus
+  kurzer Bewegungshinweis.
 - 📱 **Responsiv** und **offline lauffähig** – keine externen Abhängigkeiten.
 
 ## Das Programm
