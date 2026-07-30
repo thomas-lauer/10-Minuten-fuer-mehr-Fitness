@@ -114,4 +114,16 @@ weil der Lock beim Tab-Wechsel automatisch freigegeben wird.
 **Test-Stolperfalle:** Nach CSS-Änderungen zeigte der Vorschau-Browser weiter die
 **gecachte** `styles.css` (auch nach Reload). Verlässlich half, das Stylesheet per JS
 mit Cache-Buster neu zu laden: `link.href = 'styles.css?bust=' + zufallszahl`, dann
-messen. Sonst testet man gegen den alten Stand.
+messen. Sonst testet man gegen den alten Stand. Zusätzlich: wiederholtes
+Stylesheet-Nachladen bei gleichzeitig umgeschaltetem `prefers-color-scheme` kann in
+der Emulation den Media-Query-Zustand „verkleben" – im Zweifel in einem **frischen
+Tab** gegenprüfen.
+
+## 10. Dark Mode: fest kodierte Button-Farbe war unlesbar
+
+Im Dark Mode waren die Steuer-Buttons unleserlich: `.btn` hatte `background: #fff`
+fest kodiert, während die Textfarbe `var(--ink)` im Dark Mode hell wird → heller Text
+auf Weiß. Fix: Button-Hintergrund über eine Variable `--btn-bg` steuern (hell im Light-,
+dunkel im Dark-Mode). Lehre: Bei Themes **keine Farbe fest kodieren**, die mit einer
+themebasierten Gegenfarbe kombiniert wird – immer beide über Variablen führen. Kontrolle
+per WCAG-Kontrastverhältnis (Ziel ≥ 4.5): jetzt Button 9.5, Badges/Zahlen 5.4.

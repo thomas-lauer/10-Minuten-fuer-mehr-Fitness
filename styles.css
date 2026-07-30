@@ -14,6 +14,7 @@
   --pause:       #d9a441;   /* gedämpftes Gelb/Ocker für Pause */
   --pause-soft:  #f3e4c4;
   --line:        #cfc8b6;
+  --btn-bg:      #ffffff;   /* Hintergrund neutraler Buttons (theme-abhängig) */
   --shadow:      0 6px 24px rgba(60, 70, 50, 0.12);
   --radius:      18px;
   --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
@@ -120,7 +121,7 @@ body {
   font-size: 1rem;
   font-weight: 600;
   color: var(--ink);
-  background: #fff;
+  background: var(--btn-bg);
   border: 2px solid var(--line);
   border-radius: 12px;
   padding: 0.6rem 1.1rem;
@@ -369,11 +370,19 @@ body {
     --bg-card: #262c24;
     --ink: #e8eae0;
     --ink-soft: #a6ae9c;
+    --green: #6fa96d;         /* etwas heller für dunklen Hintergrund */
+    --green-deep: #8fc98c;    /* helles Grün für Überschriften/Badges/Zahlen */
     --green-soft: #33442f;
+    --pause: #e0b25a;
     --pause-soft: #4a3d22;
     --line: #3c4438;
+    --btn-bg: #333b30;        /* dunkler Button-Hintergrund statt Weiß */
     --shadow: 0 6px 24px rgba(0,0,0,0.4);
   }
+  /* Pausen-Text im Hinweis heller */
+  .app[data-phase="pause"] .stage__hint { color: #e0b25a; }
+  /* Zeitstrahl-Zahlen ohne Multiply, damit sie im Dark Mode lesbar bleiben */
+  .timeline__seg .lbl { mix-blend-mode: normal; color: var(--green-deep); }
 }
 
 /* ---------- Bewegungshinweis (Cue) ---------- */
