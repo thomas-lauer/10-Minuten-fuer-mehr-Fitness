@@ -1,0 +1,10 @@
+# Quell-Screen-Recording (großes Binär-Asset, für den Betrieb nicht nötig)
+ScreenRecorderProject1.mp4
+
+# Betriebssystem-/Editor-Artefakte
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Claude-Arbeitsverzeichnis
+.claude/

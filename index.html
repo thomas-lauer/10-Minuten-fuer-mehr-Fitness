@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Geführtes 10-Minuten-Workout mit Timer – von Tai Chi und Qigong inspirierte Übungen." />
+  <title>10 Minuten für mehr Fitness</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧘</text></svg>" />
+</head>
+<body>
+  <main class="app" data-phase="idle">
+    <header class="app__header">
+      <h1 class="app__title">10 Minuten für mehr Fitness</h1>
+      <p class="app__subtitle">Von Tai&nbsp;Chi &amp; Qigong inspiriert · 8 Übungen + Abschluss-Halteposition</p>
+    </header>
+
+    <!-- Startbildschirm -->
+    <section class="start" id="startScreen">
+      <div class="start__sketch" id="startSketch"></div>
+      <p class="start__intro">
+        Neun Segmente à eine Minute, dazwischen jeweils 10&nbsp;Sekunden Pause.
+        Gesamtdauer rund <strong>10&nbsp;Minuten</strong>. Bereit?
+      </p>
+      <button class="btn btn--primary btn--start" id="startBtn" type="button">▶ Training starten</button>
+      <ul class="start__list" id="startList"><!-- gefüllt von app.js --></ul>
+    </section>
+
+    <!-- Aktives Training -->
+    <section class="stage" id="stage" hidden>
+      <div class="stage__badge" id="phaseBadge">Übung</div>
+
+      <div class="stage__main">
+        <div class="stage__info">
+          <p class="stage__counter" id="segCounter">Übung 1 von 9</p>
+          <h2 class="stage__name" id="segName">—</h2>
+          <p class="stage__desc" id="segDesc">—</p>
+          <p class="stage__next" id="segNext" hidden></p>
+        </div>
+
+        <div class="stage__visual">
+          <div class="timer" id="timer" role="timer" aria-live="polite">
+            <svg class="timer__ring" viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="timer__track" cx="60" cy="60" r="54" />
+              <circle class="timer__progress" id="timerProgress" cx="60" cy="60" r="54" />
+            </svg>
+            <span class="timer__text" id="timerText">1:00</span>
+          </div>
+          <div class="stage__sketch" id="stageSketch"></div>
+        </div>
+      </div>
+
+      <!-- Live-Zeitstrahl -->
+      <div class="timeline" id="timeline" aria-label="Trainingsverlauf"></div>
+      <p class="timeline__total"><span id="elapsedText">0:00</span> / <span id="totalText">10:20</span></p>
+
+      <!-- Steuerung -->
+      <div class="controls">
+        <button class="btn" id="pauseBtn" type="button">⏸ Pause</button>
+        <button class="btn" id="skipBtn" type="button">⏭ Überspringen</button>
+        <button class="btn" id="resetBtn" type="button">↺ Neustart</button>
+        <button class="btn btn--toggle" id="soundBtn" type="button" aria-pressed="true">🔊 Ton</button>
+      </div>
+    </section>
+
+    <!-- Abschluss -->
+    <section class="done" id="doneScreen" hidden>
+      <div class="done__mark">✓</div>
+      <h2 class="done__title">Geschafft!</h2>
+      <p class="done__text">Verankert Kraft, Ruhe und Lebensenergie. Gut gemacht.</p>
+      <button class="btn btn--primary" id="restartBtn" type="button">↺ Noch einmal</button>
+    </section>
+
+    <footer class="app__footer">
+      <span>Inspiriert von einem Reel über chinesische Bewegungsübungen · nur für allgemeine Bewegung, kein medizinischer Rat.</span>
+    </footer>
+  </main>
+
+  <script src="exercises.js"></script>
+  <script src="sketches.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

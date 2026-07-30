@@ -1,0 +1,342 @@
+/* =========================================================================
+   10 Minuten für mehr Fitness – Stylesheet
+   Ruhige Qigong-Farbwelt (Grün/Erdtöne), skizzenhafter Look.
+   ========================================================================= */
+
+:root {
+  --bg:          #f4f1e8;   /* warmes Papierbeige */
+  --bg-card:     #fbf9f3;
+  --ink:         #2f3a30;   /* dunkles Waldgrün-Grau (Text) */
+  --ink-soft:    #6a7264;
+  --green:       #5b8c5a;   /* Qigong-Grün */
+  --green-deep:  #3f6b41;
+  --green-soft:  #dbe7d3;
+  --pause:       #d9a441;   /* gedämpftes Gelb/Ocker für Pause */
+  --pause-soft:  #f3e4c4;
+  --line:        #cfc8b6;
+  --shadow:      0 6px 24px rgba(60, 70, 50, 0.12);
+  --radius:      18px;
+  --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  padding: clamp(0.75rem, 3vw, 2rem);
+}
+
+.app {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ---------- Header ---------- */
+.app__header { text-align: center; }
+.app__title {
+  margin: 0;
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--green-deep);
+}
+.app__subtitle {
+  margin: 0.35rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+/* ---------- Karten allgemein ---------- */
+.start, .stage, .done {
+  background: var(--bg-card);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: clamp(1.1rem, 4vw, 2rem);
+}
+
+/* ---------- Startbildschirm ---------- */
+.start { text-align: center; }
+.start__sketch {
+  width: 120px;
+  margin: 0 auto 0.5rem;
+  color: var(--green);
+}
+.start__intro {
+  color: var(--ink-soft);
+  max-width: 44ch;
+  margin: 0 auto 1.25rem;
+  line-height: 1.55;
+}
+.start__list {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.5rem;
+  text-align: left;
+}
+.start__list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  background: var(--green-soft);
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+.start__list li span.num {
+  flex: 0 0 1.5rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+  background: var(--green);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  padding: 0.6rem 1.1rem;
+  cursor: pointer;
+  transition: transform 0.08s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.btn:hover { border-color: var(--green); }
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible { outline: 3px solid var(--green-soft); outline-offset: 2px; }
+
+.btn--primary {
+  background: var(--green);
+  border-color: var(--green-deep);
+  color: #fff;
+}
+.btn--primary:hover { background: var(--green-deep); }
+
+.btn--start {
+  font-size: 1.25rem;
+  padding: 0.85rem 2rem;
+}
+.btn--toggle[aria-pressed="false"] { opacity: 0.5; text-decoration: line-through; }
+
+/* ---------- Stage / aktives Training ---------- */
+.stage { display: flex; flex-direction: column; gap: 1.25rem; }
+
+.stage__badge {
+  align-self: center;
+  padding: 0.3rem 1.1rem;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  background: var(--green-soft);
+  color: var(--green-deep);
+}
+
+.stage__main {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.stage__info { flex: 1 1 240px; min-width: 220px; }
+.stage__counter {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.stage__name {
+  margin: 0.2rem 0 0.5rem;
+  font-size: clamp(1.5rem, 5vw, 2.1rem);
+  color: var(--green-deep);
+}
+.stage__desc { margin: 0; line-height: 1.55; color: var(--ink); }
+.stage__next {
+  margin: 0.9rem 0 0;
+  font-weight: 600;
+  color: var(--pause);
+}
+
+.stage__visual {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ---------- Timer-Ring ---------- */
+.timer {
+  position: relative;
+  width: clamp(140px, 40vw, 190px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+}
+.timer__ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+.timer__track {
+  fill: none;
+  stroke: var(--green-soft);
+  stroke-width: 8;
+}
+.timer__progress {
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 339.29;   /* 2πr, r=54 */
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.25s linear, stroke 0.3s ease;
+}
+.timer__text {
+  position: absolute;
+  font-size: clamp(2rem, 8vw, 2.8rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.stage__sketch { width: 96px; color: var(--green); }
+.sketch-svg { width: 100%; height: auto; display: block; }
+
+/* Pausen-Zustand: warme Farbe */
+.app[data-phase="pause"] .stage__badge { background: var(--pause-soft); color: #9a6a12; }
+.app[data-phase="pause"] .timer__track { stroke: var(--pause-soft); }
+.app[data-phase="pause"] .timer__progress { stroke: var(--pause); }
+.app[data-phase="pause"] .stage__name,
+.app[data-phase="pause"] .stage__sketch,
+.app[data-phase="pause"] .start__sketch { color: var(--pause); }
+
+/* Countdown-Highlight in den letzten Sekunden */
+.timer.is-ending .timer__text { color: #c0392b; animation: pop 1s ease infinite; }
+@keyframes pop { 0%,100% { transform: scale(1);} 50% { transform: scale(1.08);} }
+
+/* ---------- Zeitstrahl ---------- */
+.timeline {
+  display: flex;
+  gap: 2px;
+  height: 30px;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg);
+}
+.timeline__seg {
+  position: relative;
+  height: 100%;
+  background: var(--green-soft);
+  overflow: hidden;
+}
+.timeline__seg--pause { background: var(--pause-soft); }
+.timeline__seg .fill {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  background: var(--green);
+}
+.timeline__seg--pause .fill { background: var(--pause); }
+.timeline__seg.is-done .fill { width: 100%; }
+.timeline__seg.is-current {
+  outline: 2px solid var(--green-deep);
+  outline-offset: -2px;
+}
+.timeline__seg .lbl {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--green-deep);
+  z-index: 2;
+  mix-blend-mode: multiply;
+}
+.timeline__total {
+  margin: -0.5rem 0 0;
+  text-align: right;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Controls ---------- */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+/* ---------- Abschluss ---------- */
+.done { text-align: center; }
+.done__mark {
+  width: 70px; height: 70px;
+  margin: 0 auto 0.5rem;
+  display: grid; place-items: center;
+  background: var(--green);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 2.2rem;
+}
+.done__title { margin: 0.3rem 0; color: var(--green-deep); }
+.done__text { color: var(--ink-soft); margin: 0 0 1.25rem; }
+
+/* ---------- Footer ---------- */
+.app__footer {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  padding: 0 0.5rem;
+}
+
+/* ---------- Responsiv ---------- */
+@media (max-width: 520px) {
+  .stage__main { flex-direction: column; text-align: center; }
+  .stage__info { min-width: 0; }
+  .stage__next { color: var(--pause); }
+}
+
+/* ---------- Dark Mode (optional, folgt System) ---------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c211b;
+    --bg-card: #262c24;
+    --ink: #e8eae0;
+    --ink-soft: #a6ae9c;
+    --green-soft: #33442f;
+    --pause-soft: #4a3d22;
+    --line: #3c4438;
+    --shadow: 0 6px 24px rgba(0,0,0,0.4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timer.is-ending .timer__text { animation: none; }
+  .timer__progress { transition: none; }
+}
