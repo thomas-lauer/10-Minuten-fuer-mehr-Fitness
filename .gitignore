@@ -8,3 +8,7 @@ desktop.ini
 
 # Claude-Arbeitsverzeichnis
 .claude/
+
+# Higgsfield Companion-Skills (Tooling, nicht Teil der App)
+.agents/
+skills-lock.json
