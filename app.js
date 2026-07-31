@@ -176,6 +176,17 @@
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function setFigure(container, key) {
+    if (key === 'pause') {
+      // In der Pause steht die Comic-Figur ruhig da (statisches Bild).
+      container.innerHTML = '<img class="sketch-img" src="videos/pause.jpg" alt="" />';
+      const im = container.querySelector('img');
+      if (im) {
+        im.addEventListener('error', function () {
+          container.innerHTML = SKETCHES.pause || '';
+        }, { once: true });
+      }
+      return;
+    }
     if (VIDEO_KEYS.has(key) && !reduceMotion) {
       container.innerHTML = '<video class="sketch-video" src="videos/' + key +
         '.mp4" autoplay muted loop playsinline preload="auto"></video>';

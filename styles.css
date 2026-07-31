@@ -227,7 +227,7 @@ body {
 
 .stage__sketch { width: 130px; }
 .sketch-svg { width: 100%; height: auto; display: block; }
-.sketch-video {
+.sketch-video, .sketch-img {
   display: block;
   width: 100%;
   height: auto;
@@ -355,7 +355,8 @@ body {
   .stage__visual { flex-direction: row; align-items: center; justify-content: center; gap: 1.1rem; }
   .timer { width: clamp(118px, 34vw, 150px); }
   .stage__sketch { width: 110px; }
-  .stage__sketch .sketch-video { max-height: 150px; }
+  .stage__sketch .sketch-video,
+  .stage__sketch .sketch-img { max-height: 150px; }
 
   .controls { gap: 0.4rem; }
   .btn { font-size: 0.9rem; padding: 0.5rem 0.8rem; }
@@ -370,7 +371,8 @@ body {
 @media (max-height: 640px) {
   .app__header { display: none; }
   .stage__sketch { width: 96px; }
-  .stage__sketch .sketch-video { max-height: 132px; }
+  .stage__sketch .sketch-video,
+  .stage__sketch .sketch-img { max-height: 132px; }
   .stage__desc { -webkit-line-clamp: 2; }
 }
 
