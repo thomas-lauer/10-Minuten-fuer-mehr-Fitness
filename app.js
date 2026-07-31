@@ -165,9 +165,35 @@
     } catch (e) { /* ignorieren */ }
   }
 
+  // ---- Figur: Comic-Video (mit SVG-Fallback) -----------------------------
+  // Für diese Übungen liegen animierte Comic-Clips in videos/<key>.mp4 vor.
+  // Fallback auf die SVG-Figur bei prefers-reduced-motion oder Ladefehler.
+  const VIDEO_KEYS = new Set([
+    'spruenge', 'bodywaves', 'hueftdrehungen', 'armschwuenge', 'tote-arme',
+    'golfschwuenge', 'marschieren', 'ballett-squats', 'halteposition',
+  ]);
+  const reduceMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function setFigure(container, key) {
+    if (VIDEO_KEYS.has(key) && !reduceMotion) {
+      container.innerHTML = '<video class="sketch-video" src="videos/' + key +
+        '.mp4" autoplay muted loop playsinline preload="auto"></video>';
+      const v = container.querySelector('video');
+      if (v) {
+        // Bei fehlendem/fehlerhaftem Video zurück auf die SVG-Figur.
+        v.addEventListener('error', function () {
+          container.innerHTML = SKETCHES[key] || '';
+        }, { once: true });
+      }
+    } else {
+      container.innerHTML = SKETCHES[key] || '';
+    }
+  }
+
   // ---- Rendering: Startbildschirm ----------------------------------------
   function renderStart() {
-    el.startSketch.innerHTML = SKETCHES[PROGRAM[0].sketch] || '';
+    setFigure(el.startSketch, PROGRAM[0].sketch);
     el.startList.innerHTML = PROGRAM
       .map((ex, i) =>
         '<li><span class="num">' + (i + 1) + '</span>' +
@@ -230,7 +256,7 @@
       el.segNext.hidden = false;
       el.segNext.textContent = 'Als Nächstes: ' + seg.nextNummer + '. ' + seg.nextName;
     }
-    el.stageSketch.innerHTML = SKETCHES[seg.sketch] || '';
+    setFigure(el.stageSketch, seg.sketch);
 
     // Zeitstrahl-Segmente markieren
     Array.prototype.forEach.call(el.timeline.children, function (child, i) {

@@ -127,3 +127,25 @@ auf Weiß. Fix: Button-Hintergrund über eine Variable `--btn-bg` steuern (hell 
 dunkel im Dark-Mode). Lehre: Bei Themes **keine Farbe fest kodieren**, die mit einer
 themebasierten Gegenfarbe kombiniert wird – immer beide über Variablen führen. Kontrolle
 per WCAG-Kontrastverhältnis (Ziel ≥ 4.5): jetzt Button 9.5, Badges/Zahlen 5.4.
+
+## 11. KI-Comic-Videos je Übung (Higgsfield-Pipeline)
+
+Die Übungen gibt es zusätzlich als KI-generierte Comic-Loops (Video mit SVG-Fallback).
+Pipeline: Original-Reel-Frame → Comic-Stilisierung (Nano Banana 2) → Image-to-Video
+(Seedance 2.0) → tonlose Web-Version (ffmpeg). Stolperfallen:
+
+- **Image-to-Video allein macht keinen Comic:** Ein Foto direkt zu animieren behält
+  den Foto-Look. Erst das Standbild in den Comic-Stil bringen (Bild-Modell mit dem
+  Frame als Referenz), dann animieren.
+- **Umlaut im Pfad bricht Hintergrund-Skripte:** Ein `powershell -File script.ps1`
+  las das „ü" im Videopfad falsch → ffmpeg-Frame-Extraktion schlug fehl. Fix: Quelle
+  auf einen ASCII-Pfad kopieren.
+- **CLI-Binärdatei verschwand in langen Läufen:** In den langen Hintergrund-Batches
+  fehlte plötzlich `hf.exe`. Zuverlässiger war, die Clips **einzeln im Vordergrund**
+  zu erzeugen und die CLI bei Bedarf pro Aufruf neu zu installieren (mit Windows-`tar`
+  im PATH).
+- **Seedance-Gliedmaßen-Duplikat:** Bei schnellen Bewegungen (tiefe Kniebeuge)
+  entstanden doppelte Beine. Gegenmittel: im Prompt „single consistent body, exactly
+  one pair of legs/arms, no duplicated limbs" und eine ruhigere Startpose.
+- **Kosten:** Seedance 720p ≈ 4,5 Credits/s (5 s ≈ 22,5), Bild ≈ 2 — alle 9 Übungen
+  inkl. Fehlversuche ~350 Credits.

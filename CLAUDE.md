@@ -16,7 +16,8 @@ Technischer Überblick über die App „10 Minuten für mehr Fitness".
 | `index.html` | Grundgerüst: Start-, Trainings- und Abschlussbereich, Container für Timer/Zeitstrahl/Controls. |
 | `styles.css` | Sketch-Look, ruhige Qigong-Farbwelt (Grün/Erdtöne), Timer-Ring, Zeitstrahl, Responsive- und Dark-Mode. |
 | `exercises.js` | Datenmodell: `PROGRAM` (Array der Übungen) und Konstante `PAUSE_DAUER`. |
-| `sketches.js` | Objekt `SKETCHES`: animierte Inline-SVG-Figuren je Übung (+ `pause`). |
+| `sketches.js` | Objekt `SKETCHES`: animierte Inline-SVG-Figuren je Übung (+ `pause`); dienen als Fallback. |
+| `videos/` | KI-generierte Comic-Loop-Clips je Übung (`<key>.mp4`, ~100–225 KB, stumm, 9:16). |
 | `app.js` | Gesamte Ablauflogik: Timeline-Aufbau, State-Machine, Timer, Zeitstrahl, Audio, Steuerung. |
 | `README.md` | Nutzerdoku / Programmbeschreibung. |
 | `LEARN.md` | Erkenntnisse und gelöste Probleme. |
@@ -117,6 +118,19 @@ Zusätzlich hat jede Übung in `exercises.js` ein kurzes Feld `hinweis` (Bewegun
 z. B. „Arme schwingen · vor–zurück"), das als Pill unter dem Titel angezeigt wird.
 Die 1–2-Satz-`beschreibung` erscheint sowohl während der Übung als auch vorab in
 der Übungsliste des Startbildschirms.
+
+### Comic-Videos (mit SVG-Fallback)
+Je Übung liegt ein KI-generierter Comic-Loop in `videos/<sketch-key>.mp4`. `app.js`
+entscheidet in `setFigure(container, key)`, was angezeigt wird: existiert ein Video
+für den Key (`VIDEO_KEYS`) **und** ist kein `prefers-reduced-motion` aktiv, wird ein
+`<video autoplay muted loop playsinline>` eingesetzt; sonst (oder bei Ladefehler des
+Videos → `error`-Handler) die animierte SVG-Figur. Pausen haben kein Video und nutzen
+weiterhin die `pause`-SVG. CSS: `.sketch-video` skaliert im Skizzen-Slot, auf schmalen
+Screens per `max-height` begrenzt, damit die Trainingsansicht ohne Scrollen passt.
+
+Erzeugt wurden die Clips über die **Higgsfield-CLI**: bester Original-Reel-Frame je
+Übung → Comic-Stilisierung (Nano Banana 2, Hintergrund entfernt) → Image-to-Video
+(Seedance 2.0, 5 s, 9:16) → tonlose, herunterskalierte Web-Version (ffmpeg).
 
 ## Anpassen
 

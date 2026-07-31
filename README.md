@@ -18,9 +18,10 @@ sich rund **10 Minuten** Gesamtdauer ergeben.
   Countdown-Piepser in den letzten 3 Sekunden.
 - 📊 **Live-Zeitstrahl** der gesamten Session – jedes Segment proportional zur
   Dauer, das aktuelle wird hervorgehoben, erledigte werden gefüllt.
-- ✏️ **Animierte Comic-Figur** je Übung (illustrierte SVG-Figur, die die Bewegung
-  vorführt) plus kurzer Bewegungshinweis. Auf dem Startbildschirm steht zu jeder
-  Übung zusätzlich eine kurze Beschreibung (1–2 Sätze).
+- 🎬 **Comic-Video je Übung** (KI-generierter Loop im Comic-Stil, der die Bewegung
+  vorführt) mit **animierter SVG-Figur als Fallback** (bei `prefers-reduced-motion`
+  oder fehlendem Video). Dazu ein kurzer Bewegungshinweis; auf dem Startbildschirm
+  steht zu jeder Übung zusätzlich eine kurze Beschreibung (1–2 Sätze).
 - 📱 **Voll responsiv** – die Trainingsansicht passt ohne Scrollen aufs Handy
   (Timer und Figur nebeneinander, Footer während des Trainings ausgeblendet).
 - 🔆 **Bildschirm bleibt an** – während des Trainings verhindert die Wake-Lock-API
